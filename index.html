@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decibelmeter voor Gymzaal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen p-6">
+    <div class="max-w-2xl mx-auto">
+        <div class="bg-white rounded-2xl shadow-xl p-8">
+            
+            <!-- Header -->
+            <div class="flex items-center justify-between mb-6">
+                <h1 class="text-3xl font-bold text-gray-800 flex items-center gap-3">
+                    <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path>
+                    </svg>
+                    Decibelmeter
+                </h1>
+                <svg id="statusIcon" class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
+            </div>
+
+            <!-- Display Box -->
+            <div id="displayBox" class="bg-green-100 rounded-xl p-6 text-center mb-4 transition-colors duration-300">
+                <div class="text-7xl font-bold mb-2 text-green-600">
+                    <span id="dbValue">0</span><span class="text-4xl ml-2">dB</span>
+                </div>
+                <div id="levelText" class="text-xl font-semibold text-green-600">Stil</div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="relative h-8 bg-gray-200 rounded-full overflow-hidden mb-6">
+                <div id="progressBar" class="absolute top-0 left-0 h-full transition-all duration-200 ease-out rounded-full" style="width: 0%; background: linear-gradient(to right, #10b981, #3b82f6, #f59e0b, #ef4444)"></div>
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <div id="percentage" class="text-xs font-semibold text-gray-700">0%</div>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="bg-blue-50 rounded-lg p-4">
+                    <div class="text-sm text-gray-600 mb-1">Maximum</div>
+                    <div id="maxValue" class="text-2xl font-bold text-blue-600">0 dB</div>
+                </div>
+                <div class="bg-indigo-50 rounded-lg p-4">
+                    <div class="text-sm text-gray-600 mb-1">Gemiddelde</div>
+                    <div id="avgValue" class="text-2xl font-bold text-indigo-600">0 dB</div>
+                </div>
+            </div>
+
+            <!-- Error Message -->
+            <div id="errorBox" class="hidden mb-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+                <svg class="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+                <p id="errorText" class="text-red-800 text-sm"></p>
+            </div>
+
+            <!-- Control Button -->
+            <button id="controlBtn" class="w-full py-4 rounded-xl font-semibold text-lg transition-all bg-indigo-600 hover:bg-indigo-700 text-white">
+                Start Meting
+            </button>
+
+            <!-- Reference Information -->
+            <div class="mt-8 bg-gray-50 rounded-lg p-6">
+                <div class="flex items-start gap-3 mb-4">
+                    <svg class="w-5 h-5 text-indigo-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <h3 class="font-semibold text-gray-800">Referentiewaarden</h3>
+                </div>
+                <div class="space-y-2 text-sm text-gray-600">
+                    <div class="flex justify-between">
+                        <span>Fluisteren</span>
+                        <span class="font-medium">30 dB</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Normaal gesprek</span>
+                        <span class="font-medium">60 dB</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Gymzaal (actief)</span>
+                        <span class="font-medium">70-80 dB</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Fluitsignaal</span>
+                        <span class="font-medium">90+ dB</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Gehoorbeschadiging risico</span>
+                        <span class="font-medium text-red-600">85+ dB</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Safety Warning -->
+            <div class="mt-6 bg-amber-50 border border-amber-200 rounded-lg p-4">
+                <div class="flex items-start gap-3">
+                    <svg class="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
+                    <div class="text-sm text-amber-800">
+                        <strong>Tip voor veiligheid:</strong> Bij langdurige blootstelling aan geluiden boven 85 dB is gehoorbescherming aanbevolen. Zorg voor regelmatige rustmomenten in luidruchtige omgevingen.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // State variables
+        let audioContext = null;
+        let analyser = null;
+        let microphone = null;
+        let animationId = null;
+        let isActive = false;
+        let readings = [];
+        let maxReading = 0;
+
+        // DOM elements
+        const dbValue = document.getElementById('dbValue');
+        const levelText = document.getElementById('levelText');
+        const displayBox = document.getElementById('displayBox');
+        const progressBar = document.getElementById('progressBar');
+        const percentage = document.getElementById('percentage');
+        const maxValue = document.getElementById('maxValue');
+        const avgValue = document.getElementById('avgValue');
+        const controlBtn = document.getElementById('controlBtn');
+        const errorBox = document.getElementById('errorBox');
+        const errorText = document.getElementById('errorText');
+        const statusIcon = document.getElementById('statusIcon');
+
+        // Noise level configuration
+        function getNoiseLevel(db) {
+            if (db < 40) return {
+                level: 'Stil',
+                textColor: 'text-green-600',
+                bgColor: 'bg-green-100'
+            };
+            if (db < 60) return {
+                level: 'Normaal',
+                textColor: 'text-blue-600',
+                bgColor: 'bg-blue-100'
+            };
+            if (db < 80) return {
+                level: 'Luid',
+                textColor: 'text-yellow-600',
+                bgColor: 'bg-yellow-100'
+            };
+            if (db < 100) return {
+                level: 'Zeer Luid',
+                textColor: 'text-orange-600',
+                bgColor: 'bg-orange-100'
+            };
+            return {
+                level: 'Te Luid!',
+                textColor: 'text-red-600',
+                bgColor: 'bg-red-100'
+            };
+        }
+
+        // Update display with current decibel reading
+        function updateDisplay(db) {
+            const info = getNoiseLevel(db);
+            const perc = Math.min((db / 120) * 100, 100);
+
+            // Update main display
+            dbValue.textContent = db;
+            dbValue.className = `text-7xl font-bold mb-2 ${info.textColor}`;
+            levelText.textContent = info.level;
+            levelText.className = `text-xl font-semibold ${info.textColor}`;
+            displayBox.className = `${info.bgColor} rounded-xl p-6 text-center mb-4 transition-colors duration-300`;
+
+            // Update progress bar
+            progressBar.style.width = perc + '%';
+            percentage.textContent = Math.round(perc) + '%';
+
+            // Track readings for statistics
+            readings.push(db);
+            if (readings.length > 50) {
+                readings.shift();
+            }
+
+            // Update max and average
+            maxReading = Math.max(maxReading, db);
+            const avg = Math.round(readings.reduce((a, b) => a + b, 0) / readings.length);
+
+            maxValue.textContent = maxReading + ' dB';
+            avgValue.textContent = avg + ' dB';
+        }
+
+        // Measure audio volume continuously
+        function measureVolume() {
+            if (!analyser) return;
+
+            const dataArray = new Uint8Array(analyser.frequencyBinCount);
+            analyser.getByteFrequencyData(dataArray);
+
+            const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
+            const dbValue = Math.round(20 * Math.log10(average + 1) + 30);
+            const clampedDb = Math.min(Math.max(dbValue, 0), 120);
+
+            updateDisplay(clampedDb);
+            animationId = requestAnimationFrame(measureVolume);
+        }
+
+        // Start measuring
+        async function startMeasuring() {
+            try {
+                errorBox.classList.add('hidden');
+
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    audio: true
+                });
+
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                microphone = audioContext.createMediaStreamSource(stream);
+
+                analyser.fftSize = 256;
+                microphone.connect(analyser);
+
+                isActive = true;
+                readings = [];
+                maxReading = 0;
+
+                // Update UI
+                controlBtn.textContent = 'Stop Meting';
+                controlBtn.className = 'w-full py-4 rounded-xl font-semibold text-lg transition-all bg-red-500 hover:bg-red-600 text-white';
+                statusIcon.classList.remove('text-gray-300');
+                statusIcon.classList.add('text-green-500');
+                statusIcon.style.animation = 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite';
+
+                measureVolume();
+
+            } catch (err) {
+                errorText.textContent = 'Toegang tot microfoon geweigerd. Sta microfoontoegang toe in je browser.';
+                errorBox.classList.remove('hidden');
+                console.error('Microphone error:', err);
+            }
+        }
+
+        // Stop measuring
+        function stopMeasuring() {
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+
+            if (microphone && microphone.mediaStream) {
+                microphone.mediaStream.getTracks().forEach(track => track.stop());
+            }
+
+            if (audioContext) {
+                audioContext.close();
+            }
+
+            isActive = false;
+
+            // Update UI
+            controlBtn.textContent = 'Start Meting';
+            controlBtn.className = 'w-full py-4 rounded-xl font-semibold text-lg transition-all bg-indigo-600 hover:bg-indigo-700 text-white';
+            statusIcon.classList.add('text-gray-300');
+            statusIcon.classList.remove('text-green-500');
+            statusIcon.style.animation = '';
+        }
+
+        // Button click handler
+        controlBtn.addEventListener('click', () => {
+            if (isActive) {
+                stopMeasuring();
+            } else {
+                startMeasuring();
+            }
+        });
+
+        // Add pulse animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes pulse {
+                0%, 100% { opacity: 1; }
+                50% { opacity: 0.5; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
